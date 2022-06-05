@@ -1,85 +1,51 @@
 import { FC, ReactElement } from "react";
-import { Button, ButtonProps, Grid, Stack } from "@mui/material";
-import { MainContainer } from "./HomeStyles";
-import Typography from "@mui/material/Typography";
+import { Typography, CircularProgress, Grid, GridProps } from "@mui/material";
+import { AllPersons } from "../../Models/Person";
+import CustomCard from "../../Components/Card/CustomCard";
+import { InfoClass } from "./HomeStyles"
 
-type IProps = {
-  count: number;
-  statusPlay: number;
-  onStart: Function;
-  onPause: Function;
-  onStop: Function;
-};
+interface IProps {
+  person: AllPersons | null;
+  loading: boolean;
+  error: string;
+}
 
-const HomeView: FC<IProps> = ({
-  count,
-  statusPlay,
-  onStart,
-  onPause,
-  onStop,
-}) => {
-  let buttons: ReactElement<ButtonProps>[] = [];
+const HomeView: FC<IProps> = ({ person, loading, error }) => {
+  let arrayCards: ReactElement<GridProps>[] = [];
+  if (person) {
+    person.persons.forEach((element) => {
+      arrayCards.push(
+        <Grid item xs={12} md={6} lg={3} key={element._id}>
+          <CustomCard person={element} />
+        </Grid>
+      );
+    });
+  }
 
-  console.log(statusPlay);
-  if (statusPlay === 0) {
-    buttons.push(
-      <Button
-        key={1}
-        variant="secondary"
-        onClick={() => onStart()}
-      >
-        Iniciar
-      </Button>
+  let info = null;
+  if (loading) {
+    info = (
+      <InfoClass>
+        <CircularProgress />
+      </InfoClass>
     );
-  } else if (statusPlay === 1) {
-    buttons.push(
-      <Button
-        key={2}
-        variant="secondary"
-        onClick={() => onPause()}
-      >
-        Pausar
-      </Button>
-    );
-    buttons.push(
-      <Button key={3} variant="secondary" onClick={() => onStop()}>
-        Parar
-      </Button>
+  } else if (error !== "") {
+    info = (
+      <InfoClass>
+        <Typography gutterBottom variant="h5" component="div">
+          {error}
+        </Typography>
+      </InfoClass>
     );
   } else {
-    buttons.push(
-      <Button key={1} variant="secondary" onClick={() => onStart()}>
-        Despausar
-      </Button>
-    );
-    buttons.push(
-      <Button key={2} variant="secondary" onClick={() => onStop()}>
-        Parar
-      </Button>
+    info = (
+      <Grid container spacing={5}>
+        {arrayCards}
+      </Grid>
     );
   }
-  return (
-    <MainContainer>
-      <Grid
-        container
-        spacing={2}
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Grid item>
-          <Typography gutterBottom variant="h1" color="primary.dark">
-            Count {count}
-          </Typography>
-        </Grid>
-        <Grid item xs>
-          <Stack direction="row" spacing={10}>
-            {buttons}
-          </Stack>
-        </Grid>
-      </Grid>
-    </MainContainer>
-  );
+
+  return <>{info}</>;
 };
 
 export default HomeView;

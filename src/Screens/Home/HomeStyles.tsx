@@ -1,5 +1,6 @@
 import styled from "styled-components";
 
-export const MainContainer = styled.div`
-  margin-top: 100px;
+export const InfoClass = styled.div`
+  text-align: center;
+  margin-top: 30px;
 `;
